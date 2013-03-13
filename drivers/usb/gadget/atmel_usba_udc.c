@@ -1583,6 +1583,9 @@ static void usba_ep_irq(struct usba_udc *udc, struct usba_ep *ep)
 				submit_next_request(ep);
 				request_complete(ep, req, 0);
 			}
+		} else {
+			/* gpio_request fail so use -EINVAL for gpio_is_valid */
+			ubc->vbus_pin = -EINVAL;
 		}
 
 		epstatus = usba_ep_readl(ep, STA);
@@ -1779,6 +1782,9 @@ static irqreturn_t usba_vbus_irq(int irq, void *devid)
 				udc->driver->disconnect(&udc->gadget);
 				spin_lock(&udc->lock);
 			}
+		} else {
+			/* gpio_request fail so use -EINVAL for gpio_is_valid */
+			ubc->vbus_pin = -EINVAL;
 		}
 		udc->vbus_prev = vbus;
 	}
